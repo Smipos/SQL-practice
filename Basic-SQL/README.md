@@ -74,3 +74,16 @@
          END fund_category
   FROM fund
   ```
+* Для каждой из категорий, назначенных в предыдущем задании, посчитайте округлённое до ближайшего целого числа среднее количество инвестиционных раундов, в которых фонд принимал участие. Выведите на экран категории и среднее число инвестиционных раундов. Отсортируйте таблицу по возрастанию среднего.
+  ```
+  SELECT
+         CASE
+             WHEN invested_companies>=100 THEN 'high_activity'
+             WHEN invested_companies>=20 THEN 'middle_activity'
+             ELSE 'low_activity'
+         END fund_category,
+         ROUND(AVG(investment_rounds)) avg_rounds
+  FROM fund
+  GROUP BY fund_category
+  ORDER BY avg_rounds ASC
+  ```
