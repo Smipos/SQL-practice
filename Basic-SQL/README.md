@@ -152,3 +152,29 @@
   FROM people p
   JOIN closed_companies cc ON cc.id = p.company_id
   ```
+* Составьте таблицу, куда войдут уникальные пары с номерами сотрудников из предыдущей задачи и учебным заведением, которое окончил сотрудник.
+  ``` sql
+  WITH
+  closed_companies AS
+  (
+      SELECT DISTINCT c.id
+      FROM company c
+      JOIN funding_round fr ON fr.company_id = c.id
+      WHERE fr.is_last_round = 1
+            AND
+            fr.is_first_round = 1
+            AND
+            c.status = 'closed'
+  ),
+  staff AS
+  (
+  SELECT p.id
+  FROM people p
+  JOIN closed_companies cc ON cc.id = p.company_id
+  )
+  
+  SELECT DISTINCT s.id,
+         e.instituition
+  FROM education e
+  JOIN staff s ON e.person_id = s.id
+  ```
