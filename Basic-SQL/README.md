@@ -168,9 +168,9 @@
   ),
   staff AS
   (
-  SELECT p.id
-  FROM people p
-  JOIN closed_companies cc ON cc.id = p.company_id
+    SELECT p.id
+    FROM people p
+    JOIN closed_companies cc ON cc.id = p.company_id
   )
   
   SELECT DISTINCT s.id,
@@ -194,9 +194,9 @@
   ),
   staff AS
   (
-  SELECT p.id
-  FROM people p
-  JOIN closed_companies cc ON cc.id = p.company_id
+    SELECT p.id
+    FROM people p
+    JOIN closed_companies cc ON cc.id = p.company_id
   )
   
   SELECT s.id,
