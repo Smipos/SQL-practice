@@ -178,3 +178,30 @@
   FROM education e
   JOIN staff s ON e.person_id = s.id
   ```
+* Посчитайте количество учебных заведений для каждого сотрудника из предыдущего задания. При подсчёте учитывайте, что некоторые сотрудники могли окончить одно и то же заведение дважды.
+  ``` sql
+  WITH
+  closed_companies AS
+  (
+      SELECT DISTINCT c.id
+      FROM company c
+      JOIN funding_round fr ON fr.company_id = c.id
+      WHERE fr.is_last_round = 1
+            AND
+            fr.is_first_round = 1
+            AND
+            c.status = 'closed'
+  ),
+  staff AS
+  (
+  SELECT p.id
+  FROM people p
+  JOIN closed_companies cc ON cc.id = p.company_id
+  )
+  
+  SELECT s.id,
+         COUNT(e.instituition)
+  FROM education e
+  JOIN staff s ON e.person_id = s.id
+  GROUP BY s.id
+  ```
