@@ -205,3 +205,35 @@
   JOIN staff s ON e.person_id = s.id
   GROUP BY s.id
   ```
+* Дополните предыдущий запрос и выведите среднее число учебных заведений (всех, не только уникальных), которые окончили сотрудники разных компаний. Нужно вывести только одну запись, группировка здесь не понадобится.
+  ``` sql
+  WITH
+  closed_companies AS
+  (
+      SELECT DISTINCT c.id
+      FROM company c
+      JOIN funding_round fr ON fr.company_id = c.id
+      WHERE fr.is_last_round = 1
+            AND
+            fr.is_first_round = 1
+            AND
+            c.status = 'closed'
+  ),
+  staff AS
+  (
+      SELECT p.id
+      FROM people p
+      JOIN closed_companies cc ON cc.id = p.company_id
+  ),
+  ins_count AS
+  (
+      SELECT s.id,
+             COUNT(e.instituition) inst_count
+      FROM education e
+      JOIN staff s ON e.person_id = s.id
+      GROUP BY s.id
+  )
+  
+  SELECT AVG(inst_count)
+  FROM ins_count
+  ```
