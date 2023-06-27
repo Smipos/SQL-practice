@@ -133,3 +133,22 @@
         AND
         c.status = 'closed'
   ```
+* Составьте список уникальных номеров сотрудников, которые работают в компаниях, отобранных в предыдущем задании.
+  ```sql
+  WITH
+  closed_companies AS
+  (
+      SELECT DISTINCT c.id
+      FROM company c
+      JOIN funding_round fr ON fr.company_id = c.id
+      WHERE fr.is_last_round = 1
+            AND
+            fr.is_first_round = 1
+            AND
+            c.status = 'closed'
+  )
+  
+  SELECT p.id
+  FROM people p
+  JOIN closed_companies cc ON cc.id = p.company_id
+  ```
