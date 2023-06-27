@@ -122,3 +122,14 @@
   ORDER BY unique_inst_count DESC
   LIMIT 5
   ```
+* Составьте список с уникальными названиями закрытых компаний, для которых первый раунд финансирования оказался последним.
+  ``` sql
+  SELECT DISTINCT c.name
+  FROM company c
+  JOIN funding_round fr ON fr.company_id = c.id
+  WHERE fr.is_last_round = 1
+        AND
+        fr.is_first_round = 1
+        AND
+        c.status = 'closed'
+  ```
