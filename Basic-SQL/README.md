@@ -237,3 +237,30 @@
   SELECT AVG(inst_count)
   FROM ins_count
   ```
+* Напишите похожий запрос: выведите среднее число учебных заведений (всех, не только уникальных), которые окончили сотрудники Facebook
+  ``` sql
+  WITH
+  fb AS
+  (
+      SELECT DISTINCT id
+      FROM company 
+      WHERE name = 'Facebook'
+  ),
+  staff AS
+  (
+      SELECT p.id
+      FROM people p
+      JOIN fb ON fb.id = p.company_id
+  ),
+  ins_count AS
+  (
+      SELECT s.id,
+             COUNT(e.instituition) inst_count
+      FROM education e
+      JOIN staff s ON e.person_id = s.id
+      GROUP BY s.id
+  )
+  
+  SELECT AVG(inst_count)
+  FROM ins_count
+  ```
