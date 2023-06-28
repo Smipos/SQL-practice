@@ -264,3 +264,21 @@
   SELECT AVG(inst_count)
   FROM ins_count
   ```
+* Составьте таблицу из полей:
+  * `name_of_fund` — название фонда;
+  * `name_of_company` — название компании;
+  * `amount` — сумма инвестиций, которую привлекла компания в раунде.
+  
+  В таблицу войдут данные о компаниях, в истории которых было больше шести важных этапов, а раунды финансирования проходили с `2012` по `2013` год     включительно.
+  ``` sql
+  SELECT f.name name_of_fund,
+         c.name name_of_company,
+         fr.raised_amount amount
+  FROM company c
+  JOIN investment i ON i.company_id = c.id
+  JOIN fund f ON f.id = i.fund_id
+  JOIN funding_round fr ON fr.id = i.funding_round_id
+  WHERE c.milestones > 6
+        AND
+        EXTRACT(YEAR FROM fr.funded_at) BETWEEN 2012 AND 2013
+  ```
