@@ -320,3 +320,44 @@
         AND
         EXTRACT(YEAR FROM fr.funded_at) BETWEEN 2010 AND 2013
   ```
+* Отберите данные по месяцам с 2010 по 2013 год, когда проходили инвестиционные раунды. Сгруппируйте данные по номеру месяца и получите таблицу, в которой будут поля:
+  * номер месяца, в котором проходили раунды;
+  * количество уникальных названий фондов из США, которые инвестировали в этом месяце;
+  * количество компаний, купленных за этот месяц;
+  * общая сумма сделок по покупкам в этом месяце.
+  ``` sql
+  WITH 
+  acq AS
+  (
+      SELECT EXTRACT(MONTH FROM acquired_at) month_of_deal,
+             COUNT(acquired_company_id) sold_companies_amount,
+             SUM(price_amount) total_amount
+      FROM acquisition
+      WHERE EXTRACT(YEAR FROM acquired_at) BETWEEN 2010 AND 2013
+      GROUP BY month_of_deal
+  ),
+  info_sold AS
+  (
+      SELECT EXTRACT(MONTH FROM fr.funded_at) month_f,
+             COUNT(DISTINCT f.id) usa_fund_count
+      FROM funding_round fr
+      LEFT JOIN investment i ON i.funding_round_id = fr.id
+      LEFT JOIN fund f ON f.id = i.fund_id
+      WHERE EXTRACT(YEAR FROM fr.funded_at) BETWEEN 2010 AND 2013
+            AND
+            f.country_code = 'USA'
+      GROUP BY month_f
+  )
+  
+  SELECT acq.month_of_deal,
+         info_sold.usa_fund_count,
+         acq.sold_companies_amount,
+         acq.total_amount
+  FROM acq
+  LEFT JOIN info_sold ON info_sold.month_f = acq.month_of_deal
+  GROUP BY acq.month_of_deal, 
+           info_sold.usa_fund_count,
+           acq.sold_companies_amount,
+           acq.total_amount
+  ORDER BY acq.month_of_deal ASC
+  ```
