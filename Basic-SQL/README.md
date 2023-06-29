@@ -361,3 +361,43 @@
            acq.total_amount
   ORDER BY acq.month_of_deal ASC
   ```
+* Составьте сводную таблицу и выведите среднюю сумму инвестиций для стран, в которых есть стартапы, зарегистрированные в `2011`, `2012` и `2013` годах. Данные за каждый год должны быть в отдельном поле. Отсортируйте таблицу по среднему значению инвестиций за `2011` год от большего к меньшему.
+  ``` sql
+  WITH
+  inv_2011 AS 
+  (
+      SELECT country_code country,
+             AVG(funding_total) avg_2011,
+             EXTRACT(YEAR FROM founded_at) year_2011
+      FROM company
+      WHERE EXTRACT(YEAR FROM founded_at) = 2011
+      GROUP BY country, year_2011
+  ), 
+  inv_2012 AS 
+  (
+      SELECT country_code country,
+             AVG(funding_total) avg_2012,
+             EXTRACT(YEAR FROM founded_at) year_2012
+      FROM company
+      WHERE EXTRACT(YEAR FROM founded_at) = 2012
+      GROUP BY country, year_2012
+  ),
+  inv_2013 AS 
+  (
+      SELECT country_code country,
+             AVG(funding_total) avg_2013,
+             EXTRACT(YEAR FROM founded_at) year_2013
+      FROM company
+      WHERE EXTRACT(YEAR FROM founded_at) = 2013
+      GROUP BY country, year_2013
+  )
+  
+  SELECT inv_2011.country,
+         inv_2011.avg_2011,
+         inv_2012.avg_2012,
+         inv_2013.avg_2013
+  FROM inv_2011
+  JOIN inv_2012 ON inv_2012.country = inv_2011.country
+  JOIN inv_2013 ON inv_2013.country = inv_2011.country
+  ORDER BY  inv_2011.avg_2011 DESC
+  ```
