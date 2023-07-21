@@ -89,3 +89,22 @@ GROUP BY u.id
 ORDER BY total_badges DESC, u.id
 LIMIT 10
 ```
+
+* Сколько в среднем очков получает пост каждого пользователя?
+  Сформируйте таблицу из следующих полей:
+      * заголовок поста;
+      * идентификатор пользователя;
+      * число очков поста;
+      * среднее число очков пользователя за пост, округлённое до целого числа.
+  
+ Не учитывайте посты без заголовка, а также те, что набрали ноль очков.
+``` sql
+SELECT title,
+       user_id,
+       score,
+       ROUND(AVG(score) OVER (PARTITION BY user_id))
+FROM stackoverflow.posts
+WHERE title IS NOT NULL
+      and
+      score <> 0
+```
