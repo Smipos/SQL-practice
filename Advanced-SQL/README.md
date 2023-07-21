@@ -1,6 +1,7 @@
 Задания + код решения
 
-Первая часть.
+<details>
+      <summary><strong>Первая часть.</strong></summary>
 
 * Найдите количество вопросов, которые набрали больше 300 очков или как минимум 100 раз были добавлены в «Закладки».
 ``` sql
@@ -199,3 +200,4 @@ SELECT DISTINCT u.id,
 FROM stackoverflow.users u 
 JOIN stackoverflow.posts p ON u.id = p.user_id
 ```
+</details>
