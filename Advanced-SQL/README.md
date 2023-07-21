@@ -187,3 +187,15 @@ SELECT DISTINCT EXTRACT(DAY FROM creation_date::date) day_number,
 FROM stackoverflow.users
 WHERE creation_date::Date BETWEEN '2008-11-01' AND '2008-11-30'
 ```
+
+* Для каждого пользователя, который написал хотя бы один пост, найдите интервал между регистрацией и временем создания первого поста.
+
+  Отобразите:
+  * идентификатор пользователя;
+  * разницу во времени между регистрацией и первым постом.
+``` sql
+SELECT DISTINCT u.id,
+       (MIN(p.creation_date) OVER (PARTITION BY u.id)) - u.creation_date
+FROM stackoverflow.users u 
+JOIN stackoverflow.posts p ON u.id = p.user_id
+```
