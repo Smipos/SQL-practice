@@ -129,3 +129,61 @@ HAVING COUNT(b.id) > 1000
   * пользователям с числом просмотров меньше 100 — группу 3.
     
   Отобразите в итоговой таблице идентификатор пользователя, количество просмотров профиля и группу. Пользователи с нулевым количеством просмотров не должны войти в итоговую таблицу.
+``` sql
+SELECT u.id,
+       u.views,
+       CASE
+           WHEN u.views >= 350 THEN 1
+           WHEN u.views >= 100 AND u.views < 350 THEN 2
+           WHEN u.views < 100 THEN 3
+       END group_user
+FROM stackoverflow.users u
+WHERE u.location LIKE '%Canada%'
+      AND
+      u.views <> 0 
+```
+
+* Дополните предыдущий запрос. Отобразите лидеров каждой группы — пользователей, которые набрали максимальное число просмотров в своей группе. Выведите поля с идентификатором пользователя, группой и количеством просмотров. Отсортируйте таблицу по убыванию просмотров, а затем по возрастанию значения идентификатора.
+``` sql
+WITH grouped AS
+(
+    SELECT u.id,
+       u.views,
+       CASE
+           WHEN u.views >= 350 THEN 1
+           WHEN u.views >= 100 AND u.views < 350 THEN 2
+           WHEN u.views < 100 THEN 3
+       END group_user
+    FROM stackoverflow.users u
+    WHERE u.location LIKE '%Canada%'
+          AND
+          u.views <> 0 
+),
+sorted AS
+(
+    SELECT *,
+           MAX(views) OVER (PARTITION BY group_user) max_views
+    FROM grouped
+)
+
+SELECT id,
+       group_user,
+       max_views
+FROM sorted
+WHERE views = max_views
+ORDER BY views DESC, id 
+```
+
+* Посчитайте ежедневный прирост новых пользователей в ноябре 2008 года.
+  
+  Сформируйте таблицу с полями:
+  * номер дня;
+  * число пользователей, зарегистрированных в этот день;
+  * сумму пользователей с накоплением.
+``` sql
+SELECT DISTINCT EXTRACT(DAY FROM creation_date::date) day_number,
+       COUNT(id) OVER (ORDER BY EXTRACT(DAY FROM creation_date)),
+       COUNT(id) OVER (PARTITION BY EXTRACT(DAY FROM creation_date))
+FROM stackoverflow.users
+WHERE creation_date::Date BETWEEN '2008-11-01' AND '2008-11-30'
+```
